@@ -1,5 +1,6 @@
 #  coding: utf-8 
 import socketserver
+import os
 
 # Copyright 2013 Abram Hindle, Eddie Antonio Santos
 # 
@@ -33,6 +34,25 @@ class MyWebServer(socketserver.BaseRequestHandler):
         self.data = self.request.recv(1024).strip()
         print ("Got a request of: %s\n" % self.data)
         self.request.sendall(bytearray("OK",'utf-8'))
+
+        request_lines = self.data.decode('utf-8').split('\r\n')
+        method, path, version = request_lines[0].split(' ')
+
+        if method != 'GET':
+            self.send_response(405)
+            return
+        
+        local_path = self.map_path(path)
+
+        if not os.path.exists(local_path):
+            self.send_response(404)
+            return
+        
+        if os.path.isdir(local_path):
+            local_path = os.path.join(local_path, 'index.html')
+            if not os.path.exists(local_path):
+                self.send_response(404)
+                return
 
 if __name__ == "__main__":
     HOST, PORT = "localhost", 8080
