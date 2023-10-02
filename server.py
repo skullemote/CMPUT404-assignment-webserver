@@ -68,7 +68,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 self.send_response(200,content_type, content_length)
                 return
             
-            elif path.endswith(".html"):
+            elif path[-5:] == ".html":
                 fullpath = os.getcwd()+ "/www" + path
                 try:
                     file = open(fullpath)
@@ -82,7 +82,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
                 self.send_response(200,content_type, content_length)
                 return
            
-            elif path.endswith(".css"):
+            elif path[-4:] == ".css":
                 fullpath = os.getcwd()+ "/www" + path
                 try:
                     file = open(fullpath)
@@ -122,6 +122,7 @@ class MyWebServer(socketserver.BaseRequestHandler):
            response += 'Content-Length: {}\r\n'.format(content_length)
         if Header:
             response += Header
+        
         #sends the response to the client with utf-8 encoding
         self.request.sendall(bytearray(response, 'utf-8'))
 
